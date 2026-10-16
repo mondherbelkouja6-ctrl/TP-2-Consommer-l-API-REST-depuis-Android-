@@ -11,7 +11,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 
 // Émulateur : 10.0.2.2 — Téléphone réel : IP du PC
-private const val BASE_URL = "http://192.168.1.196:5000/api/"
+private const val BASE_URL = "http://192.168.1.106:5000/api/"
 class AppContainer {
 
     // Ignore les champs JSON absents de nos classes (createdAt, updatedAt...)
