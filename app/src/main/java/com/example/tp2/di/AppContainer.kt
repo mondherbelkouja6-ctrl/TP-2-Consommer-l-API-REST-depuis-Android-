@@ -1,6 +1,8 @@
 package com.example.tp2.di
 
+import com.example.tp2.data.remote.ConsultationApi
 import com.example.tp2.data.remote.PatientApi
+import com.example.tp2.data.repository.ConsultationRepository
 import com.example.tp2.data.repository.PatientRepository
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -34,6 +36,8 @@ class AppContainer {
         .build()
 
     private val patientApi: PatientApi = retrofit.create(PatientApi::class.java)
+    private val consultationApi: ConsultationApi = retrofit.create(ConsultationApi::class.java)
 
     val patientRepository = PatientRepository(patientApi, json)
+    val consultationRepository = ConsultationRepository(consultationApi, json)
 }

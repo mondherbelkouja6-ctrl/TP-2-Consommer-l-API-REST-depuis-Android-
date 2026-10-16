@@ -14,9 +14,16 @@ class PatientRepository(
     private val json: Json,
 ) {
 
-    suspend fun getPatients(): Result<List<Patient>> = safeCall { api.getPatients() }
+    // Exercice 2 : le filtre est transmis à Retrofit (null = pas de ?statut=)
+    suspend fun getPatients(statut: String? = null): Result<List<Patient>> =
+        safeCall { api.getPatients(statut) }
+
     suspend fun createPatient(request: PatientRequest): Result<Patient> =
         safeCall { api.createPatient(request) }
+
+    // Exercice 1 : modifier un patient (PUT)
+    suspend fun updatePatient(id: String, request: PatientRequest): Result<Patient> =
+        safeCall { api.updatePatient(id, request) }
 
     suspend fun deletePatient(id: String): Result<Unit> = safeCall {
         val response = api.deletePatient(id)

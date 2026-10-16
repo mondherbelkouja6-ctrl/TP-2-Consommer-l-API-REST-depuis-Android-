@@ -31,6 +31,10 @@ class PatientViewModel(
     private val _messages = MutableSharedFlow<String>()
     val messages: SharedFlow<String> = _messages.asSharedFlow()
 
+    // Exercice 2 : filtre choisi (null = Tous, sinon "Actif" / "Inactif")
+    private val _statutFilter = MutableStateFlow<String?>(null)
+    val statutFilter: StateFlow<String?> = _statutFilter.asStateFlow()
+
     init {
         loadPatients()
     }
@@ -38,10 +42,16 @@ class PatientViewModel(
     fun loadPatients() {
         _uiState.value = PatientsUiState.Loading
         viewModelScope.launch {
-            repository.getPatients()
+            repository.getPatients(_statutFilter.value)
                 .onSuccess { patients -> _uiState.value = PatientsUiState.Success(patients) }
                 .onFailure { e -> _uiState.value = PatientsUiState.Error(e.message ?: "Erreur inconnue") }
         }
+    }
+
+    // Exercice 2 : change le filtre puis recharge depuis le serveur
+    fun setFilter(statut: String?) {
+        _statutFilter.value = statut
+        loadPatients()
     }
 
     fun addPatient(request: PatientRequest) {
@@ -52,6 +62,18 @@ class PatientViewModel(
                     _messages.emit("${patient.prenom} ${patient.nom} ajouté")
                 }
                 .onFailure { e -> _messages.emit(e.message ?: "Ajout impossible") }
+        }
+    }
+
+    // Exercice 1 : remplace le patient modifié dans la liste
+    fun updatePatient(id: String, request: PatientRequest) {
+        viewModelScope.launch {
+            repository.updatePatient(id, request)
+                .onSuccess { patient ->
+                    updateList { list -> list.map { if (it.id == patient.id) patient else it } }
+                    _messages.emit("${patient.prenom} ${patient.nom} modifié")
+                }
+                .onFailure { e -> _messages.emit(e.message ?: "Modification impossible") }
         }
     }
 
